@@ -32,34 +32,35 @@ export function SyncButton({ sn }: { sn: string }) {
       <button
         onClick={onClick}
         disabled={busy}
-        className="flex items-center gap-2 rounded-md bg-brand-500 px-4 py-2 text-white hover:bg-brand-600 disabled:opacity-50 transition-colors"
+        className="inline-flex items-center gap-2 rounded-full bg-[#4fbf82] px-6 py-4 text-base font-bold text-white shadow-[0_18px_45px_rgba(79,191,130,0.22)] transition hover:bg-[#43ad75] disabled:cursor-not-allowed disabled:opacity-60"
       >
         <svg
-          width="14"
-          height="14"
-          viewBox="0 0 14 14"
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           className={busy ? "animate-spin" : ""}
+          aria-hidden="true"
         >
           <path
-            d="M12.25 7A5.25 5.25 0 1 1 7 1.75"
+            d="M14 8A6 6 0 1 1 8 2"
             stroke="currentColor"
-            strokeWidth="1.5"
             strokeLinecap="round"
+            strokeWidth="1.8"
           />
           <path
-            d="M7 1.75L9.625 4.375M7 1.75L4.375 4.375"
+            d="M8 2L11 5M8 2L5 5"
             stroke="currentColor"
-            strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
+            strokeWidth="1.8"
           />
         </svg>
-        {busy ? "Syncing…" : "Sync new data"}
+        {busy ? "Syncing..." : "Sync new data"}
       </button>
-      {msg && <p className="mt-1 text-xs text-brand-500">{msg}</p>}
-      {error && <p className="mt-1 text-xs text-red-400">{error}</p>}
+      {msg && <p className="mt-2 text-xs font-semibold text-[#286f52]">{msg}</p>}
+      {error && <p className="mt-2 text-xs font-semibold text-red-700">{error}</p>}
     </div>
   );
 }
