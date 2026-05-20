@@ -13,19 +13,28 @@ export default async function DashboardLayout({
   if (!user) redirect("/login");
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b bg-white">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
-          <Link href="/dashboard" className="font-semibold">
-            Glucose Monitor
+    <div className="min-h-screen bg-[#eef8f6] text-[#17201d]">
+      <header className="px-6 pt-7 sm:px-10 lg:px-14">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-4 rounded-full border border-white/80 bg-white/80 px-6 py-3 text-xl font-semibold shadow-[0_18px_50px_rgba(27,78,66,0.08)] backdrop-blur"
+          >
+            <span className="flex h-7 w-7 items-center justify-center">
+              <span className="block h-0 w-0 border-x-[8px] border-b-[24px] border-x-transparent border-b-[#286f52]" />
+            </span>
+            Eaglenos
           </Link>
-          <div className="flex items-center gap-3 text-sm text-slate-600">
-            <span>{user.email}</span>
+
+          <div className="flex items-center gap-3 rounded-full border border-white/70 bg-white/70 px-3 py-2 text-sm font-semibold text-[#68736f] shadow-sm backdrop-blur">
+            <span className="hidden max-w-[220px] truncate sm:inline">{user.email}</span>
             <SignOutButton />
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-5xl px-6 py-8">{children}</main>
+      <main className="mx-auto max-w-7xl px-6 py-10 sm:px-10 lg:px-14">
+        {children}
+      </main>
     </div>
   );
 }

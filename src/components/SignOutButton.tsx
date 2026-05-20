@@ -12,7 +12,10 @@ export function SignOutButton() {
     router.refresh();
   }
   return (
-    <button onClick={onClick} className="rounded border px-2 py-1 hover:bg-slate-100">
+    <button
+      onClick={onClick}
+      className="rounded-full border border-[#d6e5e1] bg-white/70 px-4 py-2 text-sm font-semibold text-[#17201d] transition hover:bg-white hover:text-[#286f52]"
+    >
       Sign out
     </button>
   );
