@@ -32,23 +32,23 @@ export function AddDeviceForm() {
   return (
     <form onSubmit={onSubmit} className="mt-6 grid gap-4 lg:grid-cols-[1fr_1fr_auto]">
       <label className="block">
-        <span className="text-sm font-semibold text-[#3f4b47]">Device SN</span>
+        <span className="text-sm font-semibold text-slate-950">Device SN</span>
         <input
           required
           placeholder="D115W65000875"
           value={sn}
           onChange={(e) => setSn(e.target.value.trim())}
-          className="mt-2 w-full rounded-2xl border border-[#d6e5e1] bg-[#f7fbfa] px-5 py-4 text-base text-[#17201d] outline-none transition placeholder:text-slate-400 focus:border-[#286f52] focus:bg-white focus:ring-4 focus:ring-[#286f52]/10"
+          className="mt-2 w-full rounded-2xl border border-blue-100 bg-slate-50 px-5 py-4 text-base text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-700 focus:bg-white focus:ring-4 focus:ring-blue-700/10"
         />
       </label>
 
       <label className="block">
-        <span className="text-sm font-semibold text-[#3f4b47]">Device label</span>
+        <span className="text-sm font-semibold text-slate-950">Device label</span>
         <input
           placeholder="Morning CGM"
           value={label}
           onChange={(e) => setLabel(e.target.value)}
-          className="mt-2 w-full rounded-2xl border border-[#d6e5e1] bg-[#f7fbfa] px-5 py-4 text-base text-[#17201d] outline-none transition placeholder:text-slate-400 focus:border-[#286f52] focus:bg-white focus:ring-4 focus:ring-[#286f52]/10"
+          className="mt-2 w-full rounded-2xl border border-blue-100 bg-slate-50 px-5 py-4 text-base text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-700 focus:bg-white focus:ring-4 focus:ring-blue-700/10"
         />
       </label>
 
@@ -56,7 +56,7 @@ export function AddDeviceForm() {
         <button
           type="submit"
           disabled={busy || !sn}
-          className="w-full rounded-full bg-[#286f52] px-6 py-4 text-base font-bold text-white shadow-[0_18px_45px_rgba(40,111,82,0.22)] transition hover:bg-[#225f47] disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
+          className="w-full rounded-full bg-blue-700 px-6 py-4 text-base font-bold text-white shadow-[0_18px_45px_rgba(37,99,235,0.22)] transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
         >
           {busy ? "Linking..." : "Link device"}
         </button>

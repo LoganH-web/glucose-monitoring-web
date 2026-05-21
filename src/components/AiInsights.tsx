@@ -13,18 +13,18 @@ const PROMPTS: { key: PromptKey; label: string }[] = [
 
 const mdComponents: Components = {
   h2: ({ children }) => (
-    <h3 className="mb-3 mt-5 text-sm font-bold uppercase tracking-[0.14em] text-[#286f52]">
+    <h3 className="mb-3 mt-5 text-sm font-bold uppercase tracking-[0.14em] text-blue-700">
       {children}
     </h3>
   ),
   h3: ({ children }) => (
-    <h4 className="mb-2 mt-4 text-sm font-bold uppercase tracking-[0.14em] text-[#3f4b47]">
+    <h4 className="mb-2 mt-4 text-sm font-bold uppercase tracking-[0.14em] text-slate-950">
       {children}
     </h4>
   ),
   ul: ({ children }) => <ul className="space-y-2">{children}</ul>,
   li: ({ children }) => (
-    <li className="rounded-2xl border-l-4 border-[#8ec5b6] bg-white/70 px-4 py-3 text-base leading-7 text-[#3f4b47]">
+    <li className="rounded-2xl border-l-4 border-blue-200 bg-slate-50 px-4 py-3 text-base leading-7 text-slate-700">
       {children}
     </li>
   ),
@@ -34,7 +34,7 @@ const mdComponents: Components = {
     </strong>
   ),
   p: ({ children }) => (
-    <p className="text-base leading-7 text-[#3f4b47]">{children}</p>
+    <p className="text-base leading-7 text-slate-700">{children}</p>
   ),
 };
 
@@ -52,19 +52,34 @@ export function AiInsights({
   async function ask(key: PromptKey) {
     setBusyKey(key);
     setError(null);
-    const res = await fetch("/api/ai/summary", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ device_id: deviceId, prompt_key: key, days: 14 }),
-    });
-    setBusyKey(null);
-    if (!res.ok) {
-      const j = await res.json().catch(() => ({}));
-      setError(typeof j.error === "string" ? j.error : "Request failed.");
-      return;
+
+    try {
+      const res = await fetch("/api/ai/summary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ device_id: deviceId, prompt_key: key, days: 14 }),
+      });
+
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        setError(typeof j.error === "string" ? j.error : "Request failed.");
+        return;
+      }
+
+      const j = await res.json();
+      if (typeof j.markdown !== "string") {
+        setError("AI response was not in the expected format.");
+        return;
+      }
+
+      setResponses((prev) => ({ ...prev, [key]: j.markdown as string }));
+    } catch {
+      setError(
+        "Unable to reach the AI service. Please check the deployment environment and try again."
+      );
+    } finally {
+      setBusyKey(null);
     }
-    const j = await res.json();
-    setResponses((prev) => ({ ...prev, [key]: j.markdown as string }));
   }
 
   return (
@@ -75,7 +90,7 @@ export function AiInsights({
             key={prompt.key}
             onClick={() => ask(prompt.key)}
             disabled={disabled || busyKey !== null}
-            className="rounded-2xl border border-[#d6e5e1] bg-[#f7fbfa] px-5 py-4 text-left text-lg font-semibold text-[#286f52] transition hover:border-[#286f52] hover:bg-white disabled:opacity-50"
+            className="rounded-2xl border border-blue-100 bg-slate-50 px-5 py-4 text-left text-lg font-semibold text-blue-700 transition hover:border-blue-700 hover:bg-white disabled:opacity-50"
           >
             {busyKey === prompt.key ? "Thinking..." : prompt.label}
           </button>
@@ -83,7 +98,7 @@ export function AiInsights({
       </div>
 
       {disabled && (
-        <p className="text-sm text-[#68736f]">
+        <p className="text-sm text-slate-600">
           Sync some readings first, then ask for insights.
         </p>
       )}
@@ -92,7 +107,7 @@ export function AiInsights({
       {PROMPTS.map((prompt) =>
         responses[prompt.key] ? (
           <div key={prompt.key} className="space-y-3">
-            <p className="text-lg font-bold text-[#286f52]">{prompt.label}</p>
+            <p className="text-lg font-bold text-blue-700">{prompt.label}</p>
             <ReactMarkdown components={mdComponents}>
               {responses[prompt.key]!}
             </ReactMarkdown>
@@ -100,7 +115,7 @@ export function AiInsights({
         ) : null
       )}
 
-      <p className="border-t border-[#d6e5e1] pt-4 text-sm leading-6 text-[#52615d]">
+      <p className="border-t border-blue-100 pt-4 text-sm leading-6 text-slate-600">
         General lifestyle information only - not medical advice. Always consult a
         healthcare professional.
       </p>

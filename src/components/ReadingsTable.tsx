@@ -12,7 +12,7 @@ interface Reading {
 const PAGE = 50;
 
 const TREND_MAP: Record<number, { icon: string; label: string; cls: string }> = {
-  1: { icon: "->", label: "STABLE", cls: "text-[#68736f]" },
+  1: { icon: "->", label: "STABLE", cls: "text-slate-500" },
   2: { icon: "^", label: "RISING SLOW", cls: "text-amber-600" },
   3: { icon: "^", label: "RISING", cls: "text-amber-600" },
   4: { icon: "^", label: "RISING FAST", cls: "text-red-600" },
@@ -36,14 +36,14 @@ export function ReadingsTable({ data }: { data: Reading[] }) {
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE));
 
   if (data.length === 0) {
-    return <p className="text-sm text-[#68736f]">No readings yet.</p>;
+    return <p className="text-sm text-slate-600">No readings yet.</p>;
   }
 
   return (
-    <div className="overflow-x-auto rounded-[1.25rem] bg-white/50">
+    <div className="overflow-x-auto rounded-[1.25rem] bg-white">
       <table className="min-w-full text-sm">
         <thead>
-          <tr className="text-left text-xs font-bold uppercase tracking-[0.14em] text-[#7a8d88]">
+          <tr className="text-left text-xs font-bold uppercase tracking-[0.14em] text-slate-700">
             <th className="px-4 py-3">Time</th>
             <th className="px-4 py-3">Value</th>
             <th className="px-4 py-3">Trend</th>
@@ -51,8 +51,8 @@ export function ReadingsTable({ data }: { data: Reading[] }) {
         </thead>
         <tbody>
           {slice.map((reading) => (
-            <tr key={reading.id} className="border-t border-[#d8e8e4]">
-              <td className="px-4 py-3 font-medium text-[#52615d]">
+            <tr key={reading.id} className="border-t border-blue-100">
+              <td className="px-4 py-3 font-medium text-slate-700">
                 {new Date(reading.measured_at).toLocaleString()}
               </td>
               <td className="px-4 py-3">
@@ -66,7 +66,7 @@ export function ReadingsTable({ data }: { data: Reading[] }) {
         </tbody>
       </table>
       {totalPages > 1 && (
-        <div className="flex items-center justify-between border-t border-[#d8e8e4] px-4 py-3 text-xs font-semibold text-[#68736f]">
+        <div className="flex items-center justify-between border-t border-blue-100 px-4 py-3 text-xs font-semibold text-slate-600">
           <span>
             Page {page + 1} of {totalPages}
           </span>
@@ -74,14 +74,14 @@ export function ReadingsTable({ data }: { data: Reading[] }) {
             <button
               disabled={page === 0}
               onClick={() => setPage((current) => Math.max(0, current - 1))}
-              className="rounded-full border border-[#d6e5e1] bg-white/70 px-3 py-1.5 transition hover:bg-white hover:text-[#286f52] disabled:opacity-40"
+              className="rounded-full border border-blue-100 bg-white px-3 py-1.5 transition hover:text-blue-700 disabled:opacity-40"
             >
               Prev
             </button>
             <button
               disabled={page >= totalPages - 1}
               onClick={() => setPage((current) => Math.min(totalPages - 1, current + 1))}
-              className="rounded-full border border-[#d6e5e1] bg-white/70 px-3 py-1.5 transition hover:bg-white hover:text-[#286f52] disabled:opacity-40"
+              className="rounded-full border border-blue-100 bg-white px-3 py-1.5 transition hover:text-blue-700 disabled:opacity-40"
             >
               Next
             </button>
@@ -93,7 +93,7 @@ export function ReadingsTable({ data }: { data: Reading[] }) {
 }
 
 function GlucoseBadge({ value }: { value: number }) {
-  let className = "bg-[#e4f1ee] text-[#286f52]";
+  let className = "bg-blue-100 text-blue-800";
   if (value < 3.9) className = "bg-red-50 text-red-700";
   else if (value > 10) className = "bg-amber-50 text-amber-700";
 
@@ -105,11 +105,11 @@ function GlucoseBadge({ value }: { value: number }) {
 }
 
 function TrendBadge({ trend }: { trend: number | null }) {
-  if (trend === null) return <span className="text-[#7a8d88]">-</span>;
+  if (trend === null) return <span className="text-slate-500">-</span>;
   const entry = TREND_MAP[trend] ?? {
     icon: "-",
     label: String(trend),
-    cls: "text-[#68736f]",
+    cls: "text-slate-500",
   };
 
   return (

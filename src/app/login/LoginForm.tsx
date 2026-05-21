@@ -31,47 +31,47 @@ export function LoginForm() {
   }
 
   return (
-    <div className="rounded-[2.25rem] border border-[#d8e8e4] bg-white/55 p-6 shadow-[0_28px_100px_rgba(27,78,66,0.12)] backdrop-blur">
-      <div className="rounded-[1.75rem] bg-white/70 p-6">
+    <div className="rounded-[2.25rem] border border-blue-100 bg-white p-6 shadow-[0_28px_100px_rgba(37,99,235,0.10)] backdrop-blur">
+      <div className="rounded-[1.75rem] bg-white p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#68736f]">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
               Secure sign in
             </p>
-            <h2 className="mt-2 text-3xl font-bold text-[#161b19]">
+            <h2 className="mt-2 text-3xl font-bold text-slate-950">
               Welcome back
             </h2>
-            <p className="mt-2 text-sm leading-6 text-[#68736f]">
+            <p className="mt-2 text-sm leading-6 text-slate-600">
               Access your devices, latest glucose readings, and AI
               summaries from one dashboard.
             </p>
           </div>
-          <span className="rounded-full bg-[#e4f1ee] px-4 py-2 text-xs font-bold text-[#286f52]">
+          <span className="rounded-full bg-blue-50 px-4 py-2 text-xs font-bold text-blue-700">
             Live
           </span>
         </div>
 
         <form onSubmit={onSubmit} className="mt-8 space-y-4">
           <label className="block">
-            <span className="text-sm font-semibold text-[#3f4b47]">Email</span>
+            <span className="text-sm font-semibold text-slate-950">Email</span>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-2 w-full rounded-2xl border border-[#d6e5e1] bg-[#f7fbfa] px-5 py-4 text-base outline-none transition placeholder:text-slate-400 focus:border-[#286f52] focus:bg-white focus:ring-4 focus:ring-[#286f52]/10"
+              className="mt-2 w-full rounded-2xl border border-blue-100 bg-slate-50 px-5 py-4 text-base text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-700 focus:bg-white focus:ring-4 focus:ring-blue-700/10"
               placeholder="you@example.com"
             />
           </label>
 
           <label className="block">
-            <span className="text-sm font-semibold text-[#3f4b47]">Password</span>
+            <span className="text-sm font-semibold text-slate-950">Password</span>
             <input
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-2 w-full rounded-2xl border border-[#d6e5e1] bg-[#f7fbfa] px-5 py-4 text-base outline-none transition placeholder:text-slate-400 focus:border-[#286f52] focus:bg-white focus:ring-4 focus:ring-[#286f52]/10"
+              className="mt-2 w-full rounded-2xl border border-blue-100 bg-slate-50 px-5 py-4 text-base text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-700 focus:bg-white focus:ring-4 focus:ring-blue-700/10"
               placeholder="Enter your password"
             />
           </label>
@@ -85,15 +85,15 @@ export function LoginForm() {
           <button
             type="submit"
             disabled={busy}
-            className="w-full rounded-full bg-[#286f52] px-6 py-4 text-base font-bold text-white shadow-[0_18px_45px_rgba(40,111,82,0.24)] transition hover:bg-[#225f47] disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-full bg-blue-700 px-6 py-4 text-base font-bold text-white shadow-[0_18px_45px_rgba(37,99,235,0.24)] transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {busy ? "Signing in..." : "Log in"}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-[#68736f]">
+        <p className="mt-6 text-center text-sm text-slate-600">
           No account?{" "}
-          <Link href="/signup" className="font-bold text-[#286f52] hover:underline">
+          <Link href="/signup" className="font-bold text-blue-700 hover:underline">
             Create an account
           </Link>
         </p>

@@ -32,7 +32,7 @@ export function SyncButton({ sn }: { sn: string }) {
       <button
         onClick={onClick}
         disabled={busy}
-        className="inline-flex items-center gap-2 rounded-full bg-[#4fbf82] px-6 py-4 text-base font-bold text-white shadow-[0_18px_45px_rgba(79,191,130,0.22)] transition hover:bg-[#43ad75] disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex items-center gap-2 rounded-full bg-blue-700 px-6 py-4 text-base font-bold text-white shadow-[0_18px_45px_rgba(37,99,235,0.22)] transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
       >
         <svg
           width="16"
@@ -59,7 +59,7 @@ export function SyncButton({ sn }: { sn: string }) {
         </svg>
         {busy ? "Syncing..." : "Sync new data"}
       </button>
-      {msg && <p className="mt-2 text-xs font-semibold text-[#286f52]">{msg}</p>}
+      {msg && <p className="mt-2 text-xs font-semibold text-blue-700">{msg}</p>}
       {error && <p className="mt-2 text-xs font-semibold text-red-700">{error}</p>}
     </div>
   );

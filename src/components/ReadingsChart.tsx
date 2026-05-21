@@ -26,15 +26,15 @@ export function ReadingsChart({ data }: { data: Reading[] }) {
     <div className="h-64 w-full">
       <ResponsiveContainer>
         <LineChart data={formatted} margin={{ top: 8, right: 16, bottom: 8, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#d7e8e4" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#dbeafe" />
           <ReferenceArea
             y1={3.9}
             y2={10}
-            fill="#66c99a"
+            fill="#3b82f6"
             fillOpacity={0.12}
             label={{
               value: "Target Range",
-              fill: "#286f52",
+              fill: "#1d4ed8",
               fontSize: 11,
               position: "insideTopLeft",
             }}
@@ -49,38 +49,38 @@ export function ReadingsChart({ data }: { data: Reading[] }) {
                 day: "numeric",
               })
             }
-            stroke="#9ab0aa"
-            tick={{ fill: "#68736f", fontSize: 12 }}
+            stroke="#94a3b8"
+            tick={{ fill: "#475569", fontSize: 12 }}
           />
           <YAxis
             domain={[2, "dataMax + 2"]}
-            stroke="#9ab0aa"
-            tick={{ fill: "#68736f", fontSize: 12 }}
+            stroke="#94a3b8"
+            tick={{ fill: "#475569", fontSize: 12 }}
             label={{
               value: "mmol/L",
               angle: -90,
               position: "insideLeft",
               fontSize: 11,
-              fill: "#68736f",
+              fill: "#475569",
             }}
           />
           <Tooltip
             contentStyle={{
               backgroundColor: "#ffffff",
-              border: "1px solid #d8e8e4",
+              border: "1px solid #dbeafe",
               borderRadius: "14px",
               color: "#17201d",
               fontSize: 12,
-              boxShadow: "0 18px 45px rgba(27,78,66,0.12)",
+              boxShadow: "0 18px 45px rgba(37,99,235,0.12)",
             }}
-            labelStyle={{ color: "#68736f" }}
+            labelStyle={{ color: "#475569" }}
             labelFormatter={(value) => new Date(Number(value)).toLocaleString()}
             formatter={(value: number) => [`${value} mmol/L`, "Glucose"]}
           />
           <Line
             type="monotone"
             dataKey="bg"
-            stroke="#4fbf82"
+            stroke="#2563eb"
             dot={false}
             strokeWidth={2.5}
             isAnimationActive={false}
