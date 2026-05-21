@@ -17,7 +17,7 @@ export default async function DashboardHome() {
         <div>
           <div className="inline-flex items-center gap-3 rounded-full border border-[#cfe1dd] bg-[#e4f1ee] px-5 py-3 text-sm font-semibold text-[#286f52]">
             <span className="h-2.5 w-2.5 rounded-full bg-[#286f52]" />
-            Eaglenos CGM workspace
+            AI Wellness workspace
           </div>
 
           <h1 className="mt-8 max-w-2xl text-3xl font-bold leading-tight tracking-tight text-[#161b19] sm:text-4xl">
@@ -25,9 +25,9 @@ export default async function DashboardHome() {
           </h1>
 
           <p className="mt-5 max-w-2xl text-lg leading-8 text-[#68736f]">
-            Link an Eaglenos CGM by serial number, then open the device profile
-            to sync readings, review the 14-day trend, and generate AI-assisted
-            summaries.
+            Link a CGM device by serial number, then open the device profile to
+            sync readings, review the 14-day trend, and generate AI-assisted
+            wellness summaries.
           </p>
         </div>
 
@@ -83,8 +83,8 @@ export default async function DashboardHome() {
           <div className="mt-6 rounded-[1.75rem] border border-dashed border-[#cfe1dd] bg-[#f7fbfa] px-6 py-10 text-center">
             <p className="text-base font-semibold text-[#17201d]">No devices yet</p>
             <p className="mt-2 text-sm leading-6 text-[#68736f]">
-              Add your Eaglenos CGM serial number above to start building a
-              glucose history.
+              Add your CGM serial number above to start building a glucose
+              history.
             </p>
           </div>
         ) : (

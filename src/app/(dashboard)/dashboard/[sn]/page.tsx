@@ -80,7 +80,7 @@ export default async function DevicePage({
             </h2>
             {rows.length === 0 ? (
               <p className="mt-4 text-sm text-[#68736f]">
-                No readings yet. Click <strong className="text-[#286f52]">Sync now</strong> to pull from Eaglenos.
+                No readings yet. Click <strong className="text-[#286f52]">Sync now</strong> to pull from your CGM device.
               </p>
             ) : (
               <div className="mt-5">

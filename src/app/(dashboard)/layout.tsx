@@ -23,7 +23,7 @@ export default async function DashboardLayout({
             <span className="flex h-7 w-7 items-center justify-center">
               <span className="block h-0 w-0 border-x-[8px] border-b-[24px] border-x-transparent border-b-[#286f52]" />
             </span>
-            Eaglenos
+            AI Wellness
           </Link>
 
           <div className="flex items-center gap-3 rounded-full border border-white/70 bg-white/70 px-3 py-2 text-sm font-semibold text-[#68736f] shadow-sm backdrop-blur">

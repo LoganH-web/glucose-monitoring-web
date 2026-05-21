@@ -14,7 +14,7 @@ export default function LoginPage() {
             <span className="flex h-7 w-7 items-center justify-center text-[#286f52]">
               <span className="block h-0 w-0 border-x-[8px] border-b-[24px] border-x-transparent border-b-[#286f52]" />
             </span>
-            Eaglenos
+            AI Wellness
           </Link>
         </header>
 
@@ -22,7 +22,7 @@ export default function LoginPage() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-3 rounded-full border border-[#cfe1dd] bg-[#e4f1ee] px-5 py-3 text-sm font-semibold text-[#286f52]">
               <span className="h-2.5 w-2.5 rounded-full bg-[#286f52]" />
-              Eaglenos CGM 14-day glucose review
+              AI Wellness 14-day glucose review
             </div>
 
             <h1 className="mt-8 max-w-xl text-3xl font-bold leading-tight tracking-tight text-[#161b19] sm:text-4xl">
@@ -31,8 +31,8 @@ export default function LoginPage() {
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-[#68736f]">
-              Sign in to connect your Eaglenos CGM device, sync recent readings,
-              and review a focused dashboard for highs, lows, time in range, and
+              Sign in to connect your CGM device, sync recent readings, and
+              review a focused dashboard for highs, lows, time in range, and
               glucose trends.
             </p>
           </div>
