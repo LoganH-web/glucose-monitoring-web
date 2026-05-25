@@ -13,7 +13,7 @@ export async function POST(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  const sn = decodeURIComponent(params.sn);
+  const sn = decodeURIComponent(params.sn).trim();
 
   const { data: device, error: devErr } = await supabase
     .from("devices")
@@ -35,9 +35,13 @@ export async function POST(
   const startingMaxId = maxRow?.eaglenos_id ?? 0;
 
   // Use the user's stable Eaglenos UUID issued at signup.
-  const eaglenosUuid =
-    (user.user_metadata?.eaglenos_uuid as string | undefined) ??
-    crypto.randomUUID();
+  let eaglenosUuid = user.user_metadata?.eaglenos_uuid as string | undefined;
+  if (!eaglenosUuid) {
+    eaglenosUuid = crypto.randomUUID();
+    await supabase.auth.updateUser({
+      data: { ...user.user_metadata, eaglenos_uuid: eaglenosUuid },
+    });
+  }
 
   let result;
   try {
