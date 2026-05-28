@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { geminiClient, geminiModelName } from "@/lib/gemini/client";
 import { buildPrompt, type PromptKey } from "@/lib/gemini/prompts";
 import { computeStats, downsample } from "@/lib/readings/stats";
+import { fetchReadingsSince } from "@/lib/readings/query";
 
 const Body = z.object({
   device_id: z.string().uuid(),
@@ -32,14 +33,13 @@ export async function POST(req: Request) {
   if (!device) return NextResponse.json({ error: "device not found" }, { status: 404 });
 
   const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
-  const { data: readings, error: rErr } = await supabase
-    .from("readings")
-    .select("blood_sugar, measured_at")
-    .eq("device_id", device.id)
-    .gte("measured_at", since)
-    .order("measured_at", { ascending: true });
-  if (rErr) return NextResponse.json({ error: rErr.message }, { status: 500 });
-  if (!readings || readings.length === 0) {
+  const { readings, error: readingsError } = await fetchReadingsSince(
+    supabase,
+    device.id,
+    since
+  );
+  if (readingsError) return NextResponse.json({ error: readingsError }, { status: 500 });
+  if (readings.length === 0) {
     return NextResponse.json(
       { error: "No readings yet. Sync the device first." },
       { status: 400 }

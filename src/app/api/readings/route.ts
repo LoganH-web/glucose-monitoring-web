@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { fetchReadingsSince } from "@/lib/readings/query";
 
 const Query = z.object({
   sn: z.string().min(1),
@@ -32,13 +33,8 @@ export async function GET(req: Request) {
     Date.now() - parsed.data.days * 24 * 60 * 60 * 1000
   ).toISOString();
 
-  const { data, error } = await supabase
-    .from("readings")
-    .select("id, blood_sugar, trend, measured_at")
-    .eq("device_id", device.id)
-    .gte("measured_at", since)
-    .order("measured_at", { ascending: true });
+  const { readings, error } = await fetchReadingsSince(supabase, device.id, since);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ readings: data });
+  if (error) return NextResponse.json({ error }, { status: 500 });
+  return NextResponse.json({ readings });
 }

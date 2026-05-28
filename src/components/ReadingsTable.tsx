@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { formatReadingDateTime } from "@/lib/dates";
 
 interface Reading {
   id: number;
@@ -53,7 +54,7 @@ export function ReadingsTable({ data }: { data: Reading[] }) {
           {slice.map((reading) => (
             <tr key={reading.id} className="border-t border-blue-100">
               <td className="px-4 py-3 font-medium text-slate-700">
-                {new Date(reading.measured_at).toLocaleString()}
+                {formatReadingDateTime(reading.measured_at)}
               </td>
               <td className="px-4 py-3">
                 <GlucoseBadge value={Number(reading.blood_sugar)} />

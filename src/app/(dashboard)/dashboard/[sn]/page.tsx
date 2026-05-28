@@ -6,6 +6,7 @@ import { ReadingsTable } from "@/components/ReadingsTable";
 import { AiInsights } from "@/components/AiInsights";
 import { SyncButton } from "@/components/SyncButton";
 import { computeStats } from "@/lib/readings/stats";
+import { fetchReadingsSince } from "@/lib/readings/query";
 
 const RANGE_DAYS = 14;
 
@@ -26,14 +27,7 @@ export default async function DevicePage({
   if (!device) notFound();
 
   const since = new Date(Date.now() - RANGE_DAYS * 24 * 60 * 60 * 1000).toISOString();
-  const { data: readings } = await supabase
-    .from("readings")
-    .select("id, blood_sugar, trend, measured_at")
-    .eq("device_id", device.id)
-    .gte("measured_at", since)
-    .order("measured_at", { ascending: true });
-
-  const rows = readings ?? [];
+  const { readings: rows } = await fetchReadingsSince(supabase, device.id, since);
   const stats = computeStats(rows);
 
   return (

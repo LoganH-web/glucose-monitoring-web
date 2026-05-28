@@ -10,6 +10,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { formatReadingDate, formatReadingDateTime } from "@/lib/dates";
 
 interface Reading {
   blood_sugar: number;
@@ -43,12 +44,7 @@ export function ReadingsChart({ data }: { data: Reading[] }) {
             dataKey="t"
             type="number"
             domain={["dataMin", "dataMax"]}
-            tickFormatter={(value) =>
-              new Date(value).toLocaleDateString(undefined, {
-                month: "short",
-                day: "numeric",
-              })
-            }
+            tickFormatter={(value) => formatReadingDate(Number(value))}
             stroke="#94a3b8"
             tick={{ fill: "#475569", fontSize: 12 }}
           />
@@ -74,7 +70,7 @@ export function ReadingsChart({ data }: { data: Reading[] }) {
               boxShadow: "0 18px 45px rgba(37,99,235,0.12)",
             }}
             labelStyle={{ color: "#475569" }}
-            labelFormatter={(value) => new Date(Number(value)).toLocaleString()}
+            labelFormatter={(value) => formatReadingDateTime(Number(value))}
             formatter={(value: number) => [`${value} mmol/L`, "Glucose"]}
           />
           <Line
