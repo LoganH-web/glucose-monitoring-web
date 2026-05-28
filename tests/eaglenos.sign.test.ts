@@ -34,4 +34,22 @@ describe("eaglenos sign()", () => {
     const b = sign({ timestamp: "100", uuid: "yyy" }, salt);
     expect(a).toBe(b);
   });
+
+  it("supports key=value query-style concatenation", () => {
+    const salt = "TEST_SALT";
+    const input = { timestamp: "1700000000", uuid: "abc-123" };
+    const expected = md5("salt=TEST_SALT&timestamp=1700000000&uuid=abc-123");
+    expect(sign(input, salt, "query")).toBe(expected);
+  });
+
+  it("can include endpoint-specific params when needed", () => {
+    const salt = "S";
+    const input = {
+      timestamp: "1",
+      uuid: "u",
+      extra: { sn: "SN123", max_id: 0 },
+    };
+    const expected = md5("max_id0saltSsnSN123timestamp1uuidu");
+    expect(sign(input, salt)).toBe(expected);
+  });
 });
