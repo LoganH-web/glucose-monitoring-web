@@ -3,26 +3,22 @@ import { createHash, randomUUID } from "node:crypto";
 /**
  * Sign per Eaglenos APP Common Interface Parameters spec.
  *
- * Algorithm (from the API doc):
- *   sign = md5( concat( sortedByKey([timestamp, uuid, token, salt]) ) )
+ * Algorithm from the API doc:
+ *   sign = md5(concat(sortedByKey([timestamp, uuid, token, salt])))
  *
- * "Concatenation" is interpreted as key+value (no separator). If Eaglenos
- * later confirms a different format (e.g. key=value&...), swap CONCAT_STYLE.
- *
- * `token` is included only when provided (the doc says "include if logged in").
- * Since our MVP does its own auth and never logs into Eaglenos, callers pass
- * `token` undefined and it is omitted from the signed payload.
+ * The doc says "key-value concatenation", but vendor docs commonly omit
+ * whether this means `keyvalue` or `key=value&...`, so both are supported.
  */
-type ConcatStyle = "kv" | "query";
-const CONCAT_STYLE: ConcatStyle = "kv";
+export type ConcatStyle = "kv" | "query";
 
 export interface SignInput {
   timestamp: string;
   uuid: string;
   token?: string;
+  extra?: Record<string, string | number | undefined>;
 }
 
-export function sign(input: SignInput, salt: string): string {
+export function sign(input: SignInput, salt: string, style: ConcatStyle = "kv"): string {
   const parts: Record<string, string> = {
     timestamp: input.timestamp,
     uuid: input.uuid,
@@ -31,12 +27,19 @@ export function sign(input: SignInput, salt: string): string {
   if (input.token !== undefined && input.token !== "") {
     parts.token = input.token;
   }
+  if (input.extra) {
+    Object.entries(input.extra).forEach(([key, value]) => {
+      if (value !== undefined && value !== "") {
+        parts[key] = String(value);
+      }
+    });
+  }
 
   const keys = Object.keys(parts).sort();
   const concat =
-    CONCAT_STYLE === "kv"
-      ? keys.map((k) => `${k}${parts[k]}`).join("")
-      : keys.map((k) => `${k}=${parts[k]}`).join("&");
+    style === "kv"
+      ? keys.map((key) => `${key}${parts[key]}`).join("")
+      : keys.map((key) => `${key}=${parts[key]}`).join("&");
 
   return createHash("md5").update(concat, "utf8").digest("hex");
 }
