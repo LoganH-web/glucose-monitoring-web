@@ -35,7 +35,9 @@ export async function POST(
   const startingMaxId = maxRow?.eaglenos_id ?? 0;
 
   // Use the user's stable Eaglenos UUID issued at signup.
-  let eaglenosUuid = user.user_metadata?.eaglenos_uuid as string | undefined;
+  let eaglenosUuid =
+    process.env.EAGLENOS_UUID?.trim() ||
+    (user.user_metadata?.eaglenos_uuid as string | undefined);
   if (!eaglenosUuid) {
     eaglenosUuid = crypto.randomUUID();
     await supabase.auth.updateUser({
