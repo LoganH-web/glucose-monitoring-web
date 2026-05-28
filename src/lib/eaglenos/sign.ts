@@ -7,9 +7,12 @@ import { createHash, randomUUID } from "node:crypto";
  *   sign = md5(concat(sortedByKey([timestamp, uuid, token, salt])))
  *
  * The doc says "key-value concatenation", but vendor docs commonly omit
- * whether this means `keyvalue` or `key=value&...`, so both are supported.
+ * whether this means `keyvalue`, `key=value&...`, or sorted values only,
+ * so the client can try each format.
  */
-export type ConcatStyle = "kv" | "query";
+export type ConcatStyle = "kv" | "query" | "value";
+export type SignCase = "lower" | "upper";
+export type SignOrder = "alpha" | "doc";
 
 export interface SignInput {
   timestamp: string;
@@ -18,7 +21,13 @@ export interface SignInput {
   extra?: Record<string, string | number | undefined>;
 }
 
-export function sign(input: SignInput, salt: string, style: ConcatStyle = "kv"): string {
+export function sign(
+  input: SignInput,
+  salt: string,
+  style: ConcatStyle = "kv",
+  order: SignOrder = "alpha",
+  signCase: SignCase = "lower"
+): string {
   const parts: Record<string, string> = {
     timestamp: input.timestamp,
     uuid: input.uuid,
@@ -35,13 +44,20 @@ export function sign(input: SignInput, salt: string, style: ConcatStyle = "kv"):
     });
   }
 
-  const keys = Object.keys(parts).sort();
+  const keys =
+    order === "doc"
+      ? ["timestamp", "uuid", "token", "salt", ...Object.keys(parts).sort()]
+          .filter((key, index, arr) => parts[key] !== undefined && arr.indexOf(key) === index)
+      : Object.keys(parts).sort();
   const concat =
     style === "kv"
       ? keys.map((key) => `${key}${parts[key]}`).join("")
-      : keys.map((key) => `${key}=${parts[key]}`).join("&");
+      : style === "query"
+        ? keys.map((key) => `${key}=${parts[key]}`).join("&")
+        : keys.map((key) => parts[key]).join("");
 
-  return createHash("md5").update(concat, "utf8").digest("hex");
+  const digest = createHash("md5").update(concat, "utf8").digest("hex");
+  return signCase === "upper" ? digest.toUpperCase() : digest;
 }
 
 export function makeTimestamp(): string {

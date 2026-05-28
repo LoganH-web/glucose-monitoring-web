@@ -1,5 +1,11 @@
 import { EAGLENOS_SUCCESS, type EaglenosListResponse } from "./types";
-import { type ConcatStyle, makeTimestamp, sign } from "./sign";
+import {
+  type ConcatStyle,
+  type SignCase,
+  type SignOrder,
+  makeTimestamp,
+  sign,
+} from "./sign";
 
 const MAX_PAGES = 50;
 const PAGE_SIZE = 100;
@@ -37,8 +43,21 @@ function safePrefix(value: string): string {
 
 function signStyles(): ConcatStyle[] {
   const configured = cleanEnv(process.env.EAGLENOS_SIGN_STYLE);
-  if (configured === "query") return ["query", "kv"];
-  return ["kv", "query"];
+  if (configured === "value") return ["value", "kv", "query"];
+  if (configured === "query") return ["query", "value", "kv"];
+  return ["value", "kv", "query"];
+}
+
+function signOrders(): SignOrder[] {
+  const configured = cleanEnv(process.env.EAGLENOS_SIGN_ORDER);
+  if (configured === "doc") return ["doc", "alpha"];
+  return ["alpha", "doc"];
+}
+
+function signCases(): SignCase[] {
+  const configured = cleanEnv(process.env.EAGLENOS_SIGN_CASE);
+  if (configured === "upper") return ["upper", "lower"];
+  return ["lower", "upper"];
 }
 
 function bodyStyles(): BodyStyle[] {
@@ -64,6 +83,10 @@ function shouldRetryVendorError(code: number): boolean {
   return code === 100001 || code === 200003;
 }
 
+function debugEaglenos(): boolean {
+  return cleanEnv(process.env.EAGLENOS_DEBUG) === "true";
+}
+
 function encodeBody(
   body: Record<string, string | number>,
   style: BodyStyle
@@ -81,6 +104,15 @@ function encodeBody(
     contentType: "application/x-www-form-urlencoded",
     body: form.toString(),
   };
+}
+
+function getBloodSugarEndpoint(baseUrl: string): string {
+  const normalized = baseUrl.replace(/\/+$/, "");
+  if (normalized.endsWith("/api/bloodsugar/getListBySn")) {
+    return normalized;
+  }
+
+  return `${normalized}/api/bloodsugar/getListBySn`;
 }
 
 /**
@@ -109,6 +141,7 @@ export async function getReadingsBySn(
   if (!normalizedUuid) throw new Error("Eaglenos UUID is empty");
 
   const timestamp = makeTimestamp();
+  const endpoint = getBloodSugarEndpoint(baseUrl);
 
   let lastError: EaglenosListResponse | null = null;
   const attempts: string[] = [];
@@ -117,68 +150,96 @@ export async function getReadingsBySn(
     for (const signScope of signScopes()) {
       for (const signStyle of signStyles()) {
         for (const tokenSignMode of tokenSignModes(Boolean(token))) {
-          attempts.push(`${bodyStyle}:${signStyle}:${signScope}:${tokenSignMode}`);
-          const signature = sign(
-            {
-              timestamp,
-              uuid: normalizedUuid,
-              token: tokenSignMode === "signed" ? token : undefined,
-              extra:
-                signScope === "all"
-                  ? { sn: normalizedSn, max_id: normalizedMaxId }
-                  : undefined,
-            },
-            salt,
-            signStyle
-          );
-          const payload: Record<string, string | number> = {
-            sn: normalizedSn,
-            max_id: normalizedMaxId,
-            uuid: normalizedUuid,
-            timestamp,
-            sign: signature,
-          };
-          if (token) payload.token = token;
+          for (const signOrder of signOrders()) {
+            for (const signCase of signCases()) {
+              attempts.push(
+                `${bodyStyle}:${signStyle}:${signScope}:${tokenSignMode}:${signOrder}:${signCase}`
+              );
+              const signature = sign(
+                {
+                  timestamp,
+                  uuid: normalizedUuid,
+                  token: tokenSignMode === "signed" ? token : undefined,
+                  extra:
+                    signScope === "all"
+                      ? { sn: normalizedSn, max_id: normalizedMaxId }
+                      : undefined,
+                },
+                salt,
+                signStyle,
+                signOrder,
+                signCase
+              );
+              const payload: Record<string, string | number> = {
+                sn: normalizedSn,
+                max_id: normalizedMaxId,
+                uuid: normalizedUuid,
+                timestamp,
+                sign: signature,
+              };
+              if (token) payload.token = token;
 
-          const encoded = encodeBody(payload, bodyStyle);
+              const encoded = encodeBody(payload, bodyStyle);
 
-          const res = await fetch(`${baseUrl}/api/bloodsugar/getListBySn`, {
-            method: "POST",
-            headers: {
-              "Content-Type": encoded.contentType,
-              "User-Agent": "eaglenos",
-            },
-            body: encoded.body,
-            cache: "no-store",
-          });
+              const res = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": encoded.contentType,
+                  "User-Agent": "eaglenos",
+                },
+                body: encoded.body,
+                cache: "no-store",
+              });
 
-          if (!res.ok) {
-            throw new Error(`Eaglenos HTTP ${res.status}: ${await res.text()}`);
-          }
+              if (!res.ok) {
+                throw new Error(`Eaglenos HTTP ${res.status}: ${await res.text()}`);
+              }
 
-          const json = (await res.json()) as EaglenosListResponse;
-          if (json.code === EAGLENOS_SUCCESS) return json;
+              const json = (await res.json()) as EaglenosListResponse;
+              if (json.code === EAGLENOS_SUCCESS) {
+                if (debugEaglenos()) {
+                  console.info("Eaglenos sync accepted", {
+                    sn: normalizedSn,
+                    max_id: normalizedMaxId,
+                    uuid: safePrefix(normalizedUuid),
+                    timestamp,
+                    bodyStyle,
+                    signStyle,
+                    signScope,
+                    tokenSignMode,
+                    signOrder,
+                    signCase,
+                  });
+                }
+                return json;
+              }
 
-          lastError = json;
-          console.warn("Eaglenos sync rejected", {
-            code: json.code,
-            msg: json.msg,
-            sn: normalizedSn,
-            max_id: normalizedMaxId,
-            uuid: safePrefix(normalizedUuid),
-            timestamp,
-            saltLength: salt.length,
-            hasToken: Boolean(token),
-            bodyStyle,
-            signStyle,
-            signScope,
-            tokenSignMode,
-          });
+              lastError = json;
+              if (debugEaglenos()) {
+                console.warn("Eaglenos sync rejected", {
+                  code: json.code,
+                  msg: json.msg,
+                  sn: normalizedSn,
+                  max_id: normalizedMaxId,
+                  uuid: safePrefix(normalizedUuid),
+                  timestamp,
+                  saltLength: salt.length,
+                  hasToken: Boolean(token),
+                  bodyStyle,
+                  signStyle,
+                  signScope,
+                  tokenSignMode,
+                  signOrder,
+                  signCase,
+                });
+              }
 
-          if (!shouldRetryVendorError(json.code)) {
-            throw new Error(
-              `Eaglenos error code ${json.code}: ${json.msg}. Request meta: sn=${normalizedSn}, max_id=${normalizedMaxId}, uuid=${safePrefix(normalizedUuid)}, timestamp=${timestamp}, saltLength=${salt.length}, hasToken=${Boolean(token)}, attempts=${attempts.join(",")}`
-            );
+              if (!shouldRetryVendorError(json.code)) {
+                throw new Error(
+                  `Eaglenos error code ${json.code}: ${json.msg}. Request meta: sn=${normalizedSn}, max_id=${normalizedMaxId}, uuid=${safePrefix(normalizedUuid)}, timestamp=${timestamp}, saltLength=${salt.length}, hasToken=${Boolean(token)}, attempts=${attempts.join(",")}`
+                );
+              }
+            }
           }
         }
       }

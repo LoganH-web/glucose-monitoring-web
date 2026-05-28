@@ -42,6 +42,13 @@ describe("eaglenos sign()", () => {
     expect(sign(input, salt, "query")).toBe(expected);
   });
 
+  it("supports sorted value-only concatenation", () => {
+    const salt = "TEST_SALT";
+    const input = { timestamp: "1700000000", uuid: "abc-123" };
+    const expected = md5("TEST_SALT1700000000abc-123");
+    expect(sign(input, salt, "value")).toBe(expected);
+  });
+
   it("can include endpoint-specific params when needed", () => {
     const salt = "S";
     const input = {
